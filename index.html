@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opportunity Solution Tree</title>
+<style>:root{--bg:#f7f7f5;--panel:#fff;--ink:#1c1c1a;--muted:#6b6b66;--line:#e3e3de;--accent:#3d5afe;--accent-ink:#fff;--good:#1a7f4b;--bad:#b3261e;--warn:#9a6700;--soft:#eef0ff;--radius:10px;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--ink:#ececE6;--muted:#9a9a93;--line:#30302c;--accent:#8c9eff;--accent-ink:#11122b;--good:#5fd39a;--bad:#ff8a80;--warn:#e3b341;--soft:#23264a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:28px 16px 64px}
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:24px;margin:0;letter-spacing:-.01em}
+h2{font-size:15px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+p.lead{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.grid{display:grid;gap:16px}
+@media(min-width:820px){.cols-2{grid-template-columns:1fr 1fr}.cols-3{grid-template-columns:repeat(3,1fr)}.side{grid-template-columns:340px 1fr}}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field{margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.ghost{border-color:transparent;color:var(--muted);padding:4px 8px}
+button:disabled{opacity:.5;cursor:not-allowed}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td input{padding:5px 7px}
+.scroll{overflow-x:auto}
+.stat{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat small{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0}
+.muted{color:var(--muted)}.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--accent)}
+.out{white-space:pre-wrap;word-wrap:break-word;font-size:14.5px;min-height:120px}
+.out.mono,code{font-family:var(--mono);font-size:13px}
+.note{font-size:13px;color:var(--muted)}
+footer{margin-top:28px;font-size:13px;color:var(--muted)}
+footer a{color:inherit}
+
+.tree,.tree ul{list-style:none;margin:0;padding:0}
+.tree ul{margin-left:18px;padding-left:18px;border-left:2px solid var(--line)}
+.tree li{position:relative;padding:5px 0}
+.tree ul>li::before{content:"";position:absolute;left:-18px;top:25px;width:14px;border-top:2px solid var(--line)}
+.node{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left-width:4px;border-radius:8px;padding:6px 8px}
+.node input{border-color:transparent;background:transparent;padding:4px 6px;flex:1;min-width:120px}
+.node input:hover{border-color:var(--line)}
+.kind{font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;white-space:nowrap;min-width:92px}
+.d0{border-left-color:var(--accent)}.d0 .kind{color:var(--accent)}
+.d1{border-left-color:var(--warn)}.d1 .kind{color:var(--warn)}
+.d2{border-left-color:var(--good)}.d2 .kind{color:var(--good)}
+.d3{border-left-color:var(--muted)}.d3 .kind{color:var(--muted)}
+.node button{white-space:nowrap}
+@media(max-width:640px){.kind{min-width:0}.tree ul{margin-left:6px;padding-left:10px}.tree ul>li::before{left:-10px;width:8px}}
+@media print{header .row,.node button,footer{display:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Opportunity Solution Tree</h1>
+      <p class="lead">Start from one outcome, list the customer opportunities that could move it, the solutions for each, and the experiments that would test them.</p>
+    </div>
+    <div class="row">
+      <button id="md">Copy as Markdown</button>
+      <button id="json">Export JSON</button>
+      <button id="print">Print / PDF</button>
+      <button id="reset" class="ghost">Reset</button>
+    </div>
+  </header>
+  <section class="panel"><ul class="tree" id="tree"></ul></section>
+  <p id="toast" class="note" role="status"></p>
+  <section class="panel">
+    <h2>Reading the tree</h2>
+    <p class="note" style="margin:0"><strong>Outcome</strong>: a measurable change in customer behaviour. <strong>Opportunity</strong>: a need, pain or desire heard from customers, not a feature. <strong>Solution</strong>: something you could build. <strong>Experiment</strong>: the cheapest test of the riskiest assumption behind a solution. Compare opportunities with each other before you compare solutions.</p>
+  </section>
+  <footer>MIT license · © 2026 Adrien Balcioglu · Runs entirely in your browser.</footer>
+</main>
+<script>
+const KEY = 'opportunity-tree-v1';
+const KINDS = ['Outcome', 'Opportunity', 'Solution', 'Experiment'];
+const SAMPLE = { text: 'Increase week-4 retention from 30% to 40%', children: [
+  { text: 'I forget to come back after the first session', children: [
+    { text: 'Weekly digest email', children: [{ text: 'Send a manual digest to 50 users and measure return visits', children: [] }] },
+    { text: 'Mobile push reminders', children: [] },
+  ] },
+  { text: 'I do not see the value until my team joins', children: [
+    { text: 'Invite teammates during onboarding', children: [{ text: 'Fake-door invite step, measure how many add an email', children: [] }] },
+  ] },
+] };
+const $ = (id) => document.getElementById(id);
+let root = load();
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.text === 'string' && Array.isArray(s.children)) return s; } catch {}
+  return structuredClone(SAMPLE);
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(root)); } catch {} }
+// A node is addressed by its path of child indexes, e.g. "0.1".
+const at = (path) => path.split('.').filter(Boolean).reduce((n, i) => n.children[+i], root);
+
+function build(node, path, depth) {
+  const li = document.createElement('li');
+  const box = document.createElement('div'); box.className = 'node d' + Math.min(depth, 3);
+  const kind = document.createElement('span'); kind.className = 'kind'; kind.textContent = KINDS[Math.min(depth, 3)];
+  const input = document.createElement('input'); input.value = node.text; input.dataset.path = path; input.setAttribute('aria-label', KINDS[Math.min(depth, 3)]);
+  box.append(kind, input);
+  if (depth < 3) { const add = document.createElement('button'); add.textContent = '+ ' + KINDS[depth + 1]; add.dataset.add = path; box.append(add); }
+  if (depth > 0) { const del = document.createElement('button'); del.className = 'ghost'; del.textContent = '✕'; del.dataset.del = path; del.setAttribute('aria-label', 'Delete with everything under it'); box.append(del); }
+  li.append(box);
+  if (node.children.length) {
+    const ul = document.createElement('ul');
+    node.children.forEach((child, i) => ul.append(build(child, path ? `${path}.${i}` : String(i), depth + 1)));
+    li.append(ul);
+  }
+  return li;
+}
+function render(focusPath) {
+  const tree = $('tree'); tree.innerHTML = ''; tree.append(build(root, '', 0));
+  if (focusPath !== undefined) { const input = tree.querySelector(`input[data-path="${focusPath}"]`); input?.focus(); input?.select(); }
+}
+
+$('tree').addEventListener('change', (e) => { if (e.target.dataset.path === undefined) return; at(e.target.dataset.path).text = e.target.value; save(); });
+$('tree').addEventListener('click', (e) => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.add !== undefined) {
+    const parent = at(t.dataset.add); parent.children.push({ text: '', children: [] }); save();
+    render((t.dataset.add ? t.dataset.add + '.' : '') + (parent.children.length - 1));
+  } else if (t.dataset.del !== undefined) {
+    const parts = t.dataset.del.split('.'); const index = +parts.pop(); const parent = at(parts.join('.'));
+    const node = parent.children[index];
+    if (node.children.length && !confirm('Delete this item and everything under it?')) return;
+    parent.children.splice(index, 1); save(); render();
+  }
+});
+
+function toMarkdown(node, depth = 0) {
+  const line = depth === 0 ? `# ${node.text}\n` : `${'  '.repeat(depth - 1)}- **${KINDS[Math.min(depth, 3)]}**: ${node.text || '(empty)'}`;
+  return [line, ...node.children.map((c) => toMarkdown(c, depth + 1))].join('\n');
+}
+function download(name, content, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; a.click(); URL.revokeObjectURL(a.href); }
+$('md').addEventListener('click', async () => {
+  const md = toMarkdown(root) + '\n';
+  try { await navigator.clipboard.writeText(md); $('toast').textContent = 'Tree copied as Markdown.'; }
+  catch { download('opportunity-tree.md', md, 'text/markdown'); $('toast').textContent = 'Clipboard unavailable: downloaded opportunity-tree.md instead.'; }
+  setTimeout(() => { $('toast').textContent = ''; }, 3000);
+});
+$('json').addEventListener('click', () => download('opportunity-tree.json', JSON.stringify(root, null, 2), 'application/json'));
+$('print').addEventListener('click', () => window.print());
+$('reset').addEventListener('click', () => { if (confirm('Replace your tree with the sample?')) { root = structuredClone(SAMPLE); save(); render(); } });
+render();
+</script>
+</body>
+</html>
