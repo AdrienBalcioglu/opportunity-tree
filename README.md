@@ -1,6 +1,8 @@
 # Opportunity Solution Tree
 
 A simple editor for opportunity solution trees: outcome, opportunities, solutions, experiments.
+**[Try it live](https://adrienbalcioglu.github.io/opportunity-tree/)**
+
 
 ## Features
 
