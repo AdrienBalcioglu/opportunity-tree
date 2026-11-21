@@ -2,7 +2,7 @@
 
 A simple editor for opportunity solution trees: outcome, opportunities, solutions, experiments.
 
-**[Website](https://adrienbalcioglu.github.io/opportunity-tree/about.html)** · **[Open the app](https://adrienbalcioglu.github.io/opportunity-tree/)**
+**[Website](https://eidoslab.fr/opportunity-tree)** · **[Open the app](https://adrienbalcioglu.github.io/opportunity-tree/)**
 
 ## Features
 
